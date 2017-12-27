@@ -1,0 +1,26 @@
+.rdata : Const로 선언된 변수, 변수로 사용되지 않는 String를 저장하는 섹션
+
+.data  : Const를 제외한 전역 변수 , Static으로 선언된 지역 변수를 저장하는 섹션
+
+
+
+
+
+--Window Programming--
+
+//HINSTANCE == HMODULE
+
+- 프로그램의 핸들이 아닌 프로그램 코드를 담고 있는 모듈( ex) .exe, .dll )에 대한 핸들
+- 메모리에 올려진 프로그램 코드덩어리에 대한 고유 식별 번호
+
+// HWND
+- Window OS 에서 화면 출력을 위해 관리하는 리소스
+- 하나의 프로그램에 HWND 타입의 개체가 1개이상 될 수 있음
+
+// FARPROC == int(__stdcall* FARPROC)()
+// GetModuleHandle(NULL) == ImageBase
+
+//Access Token
+-프로세스나 쓰레드의 신원과 권한에 대한 정보
+
+

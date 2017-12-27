@@ -1,0 +1,46 @@
+안티 리버싱
+
+1. Static Anti Reversing
+
+PEB.BeingDebugged
+
+//IsDebuggerPresent()를 사용하여 BeingDebugged의 값이 TRUE인지 확인
+//PEB를 활용하는 안티디버깅의 방법으로 회피 방법으로는 Edit으로 PEB.BeingDebugged의 값을 0으로 변경 or EAX값을 0으로 변경
+
+PEB.Ldr
+
+//디버깅 프로세스는 사용하지 않는 힙 메모리영역을 0xFEEEFEEE값으로 채우는데 이것을 이용하여 안티리버싱을 구현할 수 있음
+//PEB.Ldr 맴버는 _PEB_LDR_DATA 구조체를 가리키는 포인터인데 이 구조체는 힙 메모리 영역에 생성되므로 이부분을 스캔하면 쉽게 알 수 있음
+//회피 방법으로는 0xFEEEFEEE값을 NULL로 채워주면 변경
+
+PEB.ProcessHeap
+
+//이 맴버는 HEAP구조체를 가리키는 포인터인데 HEAP구조체에 있는 Flags, ForceFlags 맴버는 정상 실행 중일 때는 각각 0x2, 0x0인데, 디버깅 중에는 이 값이 변경됨
+//회피 방법으로는 Heap.Flags와 HeapForceFlags를 각각 0x2, 0x0으로 변경
+
+PEB.NtGlobalFlag
+
+//프로세스가 디버깅 중일 때 이 값이 0x70으로 세팅됨
+//회피 방법으로는 PEB.NtGlobalFlag의 값을 0x0으로 세팅
+
+NtQueryInformationProcess(), CheckRemoteDebuggerPresent()
+
+//NtQueryInformationProcess()의 두번째 파라미터로 ProcessDebugProt(0x7), ProcessDebugObjectHandle(0x1E), ProcessDebugFlag(0x1F)가 디버거 탐지에 사용됨
+//CheckRemoteDebuggerPresent()는 IsDebuggerPresent()와 비슷하게 디버깅 여부를 판별하는 데 CheckRemoteDebuggerPresent() 내부에 NtQueryInformationProcess를 사용하고 있음
+//회피 방법으로는 두번째 파라미터의 값을 확인 후 리턴값을 조정하게 끔 후킹을 하는 것이 있음
+
+NtQuerySystemInformation()
+
+//디버깅 환경을 체크하는 안티디버깅인데, 이 함수는 현재 동작 중인 OS 시스템에 대한 다양한 정보를 구할 수 있음
+//첫번째 파라미터로 SystemKernelDeubggerInformation(0x23)값을 주면 OS 시스템이 디버그 모드로 부팅되었는지 알 수 있음
+//회피 방법으로는 cmd창에서 'bcdedit / debug off' 명령을 내리고 재부팅을 하여 OS를 일반 모드로 시작
+
+NtQueryObject()
+
+//시스템에서 어떤 디버거가 다른 프로세스를 디버깅 중이라면 그때 DebugObject타입의 커널 객체가 생성되는데, 그 DebugObject의 존재를 확인하는 것임
+//위의 API 함수는 시스템의 다양한 종류의 커널 객체 정보를 구한다. 
+
+
+
+
+출처:리버싱 핵심원리 /이승원 지음
