@@ -1,0 +1,14 @@
+동적으로 API함수주소를 불러오는 방법
+
+1. API함수가 있는 dll 참조하기
+
+TEB -> PEB -> _PEB_LDR_DATA(Ldr) -> InMemoryOrderLinks를 이용해 Basedll의 문자열 검색 후 원하는 함수의 dll 참조
+
+2. dll안에 있는 API함수 참조하기
+
+NT Header - Optional Header - Data Directories - Export Table 구조체에 있는 AddressOfFunctions(실제 함수의 시작주소까지의 오프셋 배열을 가리킴), AddressOfNames(함수의 이름의 배열을 가리킴), AddressOfNameOrdinals(함수의 서수 배열을 가리킴) 맴버를 참조
+
+1) 함수명 배열로 이동해서 원하는 함수의 이름과 해당 인덱스를 찾는다.
+2) Ordinals 배열에서 인덱스에 해당하는 서수 인덱스 값을 찾는다.
+3) EAT 배열에서 서수 인덱스에 해당하는 함수 offset을 확인한다.
+4) DLL Base 주소와 offset을 더하여 함수의 실제주소를 구한다.

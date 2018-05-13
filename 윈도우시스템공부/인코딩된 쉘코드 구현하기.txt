@@ -1,0 +1,50 @@
+1) 현재 코드의 주소를 알아내는 코드 블럭(GetPC)
+2) 인코딩된 코드를 디코딩 하는 코드 블럭(Decoder)
+3) 인코딩된 쉘코드(Encoded Data)
+
+[*]GetPC블럭을 구현하는 방법
+
+1. call + 5
+
+e8 00 00 00 00	call 0x5
+58            	pop eax
+
+//call명령어 뒤에 붙는 operand의 값은 call하려는 주소값 - 현재 주소값이기 때문에 0x5를 하면 call명령어 다음 코드영역이 실행됨. 이때 call은 다시 돌아올 eip를 스택에 저장하기 때문에 pop eax를 통해서 현재 코드주소를 얻어옴
+
+//널바이트가 있어서 잘 안쓰임
+
+
+2. call + 4
+
+e8 ff ff ff ff call 0x4
+c2             ret
+59             pop ecx
+
+//call 0x4는 다음 코드영역보다 한바이트 이전곳을 불러오기 때문에 c2를 실행하는 것이 아닌 ff c2 명령어를 수행하게 되서 inc edx를 실행하게 됨. 이도 pop ecx를 통해서 코드주소를 얻어올 수 있음
+
+
+3. FPU 명령어 이용(fstenv)
+
+d9 ee      	fldz
+d9 74 24 f4	fnstenv [esp - 0xc]
+58         	pop eax
+
+
+da de      	fcmovu st, st(6)
+d9 74 24 f4	fstenv (28-BYTE) PTR SS:[ESP - 0xC]
+
+//명령어의 추가적인 검색이 필요함
+//FPU 관련 부동 소수점 연산 명령어를 이용해 코드주소를 eax에 넣음
+
+4. backword call
+
+eb 03         	jmp short 0x5 (1)
+5e          	pop esi       (3)
+ff e6   	jmp esi       (4)
+e8 f8 ff ff ff	call -7       (2)
+58		pop eax	      (5)
+
+//(1)에서 (2)로 넘어가서 call -7명령어를 통해서 (3)으로 넘어감. (3)에서 (2)에서 push 해놓은 eip를 esi에 넣고 jmp esi를 통해서 (5)로 넘어감
+
+
+
