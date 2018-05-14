@@ -84,7 +84,31 @@ int main(int argc, char* argv[]) {
 }
 
 
-!도전과제: windows 10에서 계산기를 키는 쉘코드를 직접 구현하기
+!도전과제: Practice.exe에서 사용할 windows 10에서 계산기를 실행시키는 쉘코드를 직접 구현하기
+
+
+- Integer Overflow exploit
+
+- Use-After-Free Exploit
+
+ 1. Use-After-Free
+ex)
+	Obect *obj = (Object*)malloc(sizeof(Object));
+	obj->Method();
+	free(obj);
+	...
+	obj->Method(); // Use-After-Free
+
+**********************************************************************
+
+ : 위와 같이 free된 포인터를 사용함으로써 발생하는 버그이다.
+
+ 2. HeapSpray
+
+ : HeapSpray기법은 Heap영역에 수많은 Nop코드와 쉘코드를 스프레이로 뿌리듯이 삽입하는 기법이다.
+ : 힙 메모리를 컨트롤 할 수 있어야 하므로 파일 등의 입력값을 통해 힙 메모리를 할당할 수 있거나, JavaScript, ActionScript등으로 힙 메모리 조작이 가능한 상황에서만 사용이 가능하다.
+ : 
+
 
 
 
