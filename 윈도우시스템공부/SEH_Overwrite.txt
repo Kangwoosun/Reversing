@@ -1,0 +1,11 @@
+- SEH Overwrite
+
+ Stack Cookie(저장된 EBP와 스택에 저장되는 버퍼들 사이에 스택오버플로우가 있는지 확인하는 보안기법)를 우회하기 위한 기법
+ 
+Stack Cookie는 메인이 실행하고 바로 값을 할당받고 끝날때 할당받은 값과 동일한지 검사를 함. 이때 처음 값과 일치하지 않으면 예외처리를 해서 프로그램을 종료시킴.
+
+이때 SEH Overwrite은 이 예외처리하는 SEH를 덮어씌워서 쉘코드를 실행시키는 기법임
+
+SEH는 Next SEH Record, Handler가 저장되있는데 Next SEH Record는 다음 SEH테이블을 가리키고 (linked list와 비슷) Handler는 예외처리가 되었을 때 실행할 함수의 주소가 저장되어 있다.
+
+이때 Handler에 POP r32, POP r32, RET의 동작을 하는 곳의 주소를 넣어주고 Next SEH Record는 쉘코드로 jmp하는 기계어를 넣어주면 쉘코드가 실행된다. (POP POP RET을 넣어주는 이유는 예외처리를 하는 순간 스택의 상황이 실행할때와는 달라진다. 이때 달라진 스택에서 ESP + 0x8, ESP + 0x1C만큼 떨어진 곳에 해당 Handler가 있는 테이블의 Next SEH Record의 주소값이 저장되어 있다. 그래서 POP, POP, RET을 통해서 ESP + 0x8에 있는 주소로 RET을 해주면 Next SEH Record에 있는 기계어가 실행됨)

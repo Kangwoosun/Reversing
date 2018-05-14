@@ -1,0 +1,107 @@
+Heap Overflow
+
+- Function Pointer Overwrite
+
+ex)
+	static char log_buf[500] = {0,};
+	static int (* log_func)(void) = NULL;
+	...
+	strcpy(log_buf, buf);
+	log_func();
+
+**********************************************************************
+{Heap영역의 코드는 스택과 같이 정형화 된 EBP, RET등을 사용하지 않는다.}
+
+=> Heap 영역에 buf[500] 다음 log_func의 포인터 값이 저장되어 있어서 buf의 크기가 500보다 커지면 log_func()의 자리를 침범할 수 있음
+
+
+- Vtable Overwrite
+
+ex)
+	class Book{
+	private:
+		char name[100];
+		int page;
+	public:
+		Book(char* _name, int _page){
+			strcpy(name, _name);
+			page = _page;
+		}
+		virtual void setName(char* input){ ... }
+		virtual char* getName(){ ... }
+	};
+	Book mybook("test", 1);
+	mybook.setName(contents);
+
+**********************************************************************
+
+ : 클래스에서 가상함수(virtual function)을 사용하게 되면 Vtable(Virtual Function Table)이 생성된다.
+ : Heap/Stack에 Pointer to Obejct가 생성되고 Pointer을 참조하여 Pointer to Vtable을 참조할 수 있다. Vtable의 Pointer을 통해서 해당 함수의 주소를 찾아서 실제 함수를 호출함.
+ : 이때 버퍼가 Object 근처의 주소에 있어서 Pointer to Vtable을 Overwrite해서 Pointer to Shellcode가 있는 곳을 참조하게 만드는 기법임
+
+#include <string>
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+
+class Book {
+private:
+	char name[100];
+	int page;
+public:
+	Book(char* _name, int _page) {
+		strcpy(name, _name);
+		page = _page;
+	}
+	virtual void setName(char* input) {
+		char* buf = (char*)malloc(20);
+		strcpy(buf, input);
+		printname(buf);
+		getName();
+	}
+	virtual void printname(char* buf) {
+		printf("name : %s", buf);
+	}
+	virtual char* getName() {
+		return name;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		printf(" Usage : bookmanager.exe [filename]\n");
+		exit(1);
+	}
+	static char contents[1000] = { 0, };	// 힙 버퍼 할당
+	static Book mybook("windows_hacking", 1);	// 객체 할당
+	printf("object addr : 0x%x\n", &mybook);
+	printf("object vtable addr : 0x%p\n", mybook);
+	printf("buf addr : 0x%x\n", &contents);
+	FILE* f = fopen(argv[1], "r");
+	fgets(contents, 1500, f);	// BufferOverflow
+	mybook.setName(contents);	// 객체 사용
+	return 0;
+}
+
+
+!도전과제: windows 10에서 계산기를 키는 쉘코드를 직접 구현하기
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

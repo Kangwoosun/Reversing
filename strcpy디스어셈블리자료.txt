@@ -1,18 +1,18 @@
 or ecx, FFFFFFFF
-xor eax, eax //eax = 0으로 초기화
-lea edx, dword ptr ss:[esp] //목적지 주소를 edx에 이동
+xor eax, eax ;eax = 0으로 초기화
+lea edx, dword ptr ss:[esp] ;목적지 주소를 edx에 이동
 push esi
 push edi
 mov edi, "Hello World!" 's address
-repne scas byte ptr es:[edi] //repne: zf = 0, ecx >0일때 반복 scas: 크기에 맞는 al/ax/eax를 뒤의 값과 cmp
-not ecx //edi의 문자열 길이
-sub edi, ecx //edi의 문자열 시작점 복귀
-mov eax, ecx //edi의 문자열(ecx값) 백업
+repne scas byte ptr es:[edi] ;repne: zf = 0, ecx >0일때 반복 scas: 크기에 맞는 al/ax/eax를 뒤의 값과 cmp
+not ecx ;edi의 문자열 길이
+sub edi, ecx ;edi의 문자열 시작점 복귀
+mov eax, ecx ;edi의 문자열(ecx값) 백업
 mov esi, edi
 mov edi, edx
-shr ecx, 2 //ecx에 문자열의 길이를 4로 나눈 몫이 저장
-rep movs dword ptr es:[edi], dword ptr ds:[esi] // DWORD단위로 이동하기때문에 4로 나눈 몫만큼 이동
-mov ecx, eax //백업한 ecx 찾아오기
-and ecx, 3 //ecx에 문자열의 길이를 4로 나눈 나머지가 저장
-rep movs byte ptr es:[edi], byte ptr ds: [esi] // BYTE단위로 이동하기 때문에 4로 나눈 나머지만큼 이동
+shr ecx, 2 ;ecx에 문자열의 길이를 4로 나눈 몫이 저장
+rep movs dword ptr es:[edi], dword ptr ds:[esi] ; DWORD단위로 이동하기때문에 4로 나눈 몫만큼 이동
+mov ecx, eax ;백업한 ecx 찾아오기
+and ecx, 3 ;ecx에 문자열의 길이를 4로 나눈 나머지가 저장
+rep movs byte ptr es:[edi], byte ptr ds: [esi] ; BYTE단위로 이동하기 때문에 4로 나눈 나머지만큼 이동
 lea ecx, dword ptr ss:[esp+8]
