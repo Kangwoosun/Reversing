@@ -124,6 +124,10 @@ ex)
 
 ***********************************************************************
 
+ 3. Use-After-Free Exploit 작성
+
+URL::https://www.exploit-db.com/exploits/24020/ 참조
+
 
 
 
