@@ -1,3 +1,13 @@
+#include <stdio.h>
+
+int main() {
+   char* szSource = "Hello World !";
+   char szTarget[100];
+   strcpy(szTartget, szSource);
+   printf("%s\n", szTarget);
+}
+
+
 or ecx, FFFFFFFF
 xor eax, eax ;eax = 0으로 초기화
 lea edx, dword ptr ss:[esp] ;목적지 주소를 edx에 이동
