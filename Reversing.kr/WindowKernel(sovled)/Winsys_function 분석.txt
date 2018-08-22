@@ -1,0 +1,63 @@
+WinKer.sys
+
+sub_14005
+	(__security_init_cookie())
+
+sub_11466(DriverEntry)
+	DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = (PDRIVER_DISPATCH)sub_11288;	
+	DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)sub_112F8;
+	DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)sub_112F8;
+
+
+	
+	sub_1131C
+		(DeferredRoutine(Custom DPC)를 DPC큐에 넣는 작업) 
+	sub_11288
+		
+	sub_112F8
+
+	sub_11266
+		sub_111DC
+			dword_13034
+			dword_1300C3
+			sub_11156
+				sub_110D0
+	sub_113E8
+
+flag
+0:
+1: scancode == -91 scancode ^ 0x12 == -73
+2:
+3: scancode == -110 scancode ^ 0x12 == -128
+4:
+5: scancode == -107 scancode ^ 0x12 == -121
+6:
+7: scancode == -80 scancode ^ 0x12 == -94
+100:
+101: scancode ^ 0x12 == -78 scancode == -96
+102: 
+103: scancode ^ 0x12 == -123 scancode == -105
+104:
+105: scancode ^ 0x12 == -93 scancode == -79
+106:
+107: scancode ^ 0x12 == -122 scancode == -108
+200:
+201: scancode ^ 0x12 ^ 0x5 == -76 scancode == -93
+202:
+203: scancode ^ 0x12 ^ 0x5 == -113 scancode == -104
+204:
+205: scancode ^ 0x12 ^ 0x5 == -113 scancode == -104
+206:
+207: scancode ^ 0x12 ^ 0x5 == -78 scancode == -118
+
+-91, -110, -107, -80, -96, -105, -79, -108, -93, -104, -104, -91
+ A5,  92, 95, B0, A0, 97, B1, 94, A3, 98, 98, A5
+ K , E, Y, B, D, I, N, T, H, O, O, K
+keybdinthook
+
+
+ezbeat.tistory.com/296
+	
+
+KeSetTargetProcessorDpc
+KeDelayExecutionThread

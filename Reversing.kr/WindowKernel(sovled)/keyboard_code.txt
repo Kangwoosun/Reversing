@@ -1,0 +1,152 @@
+#include <Windows.h>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+DWORD dword_13030 = 1;
+DWORD dword_13034 = 0;
+DWORD dword_13024 = 0;
+DWORD dword_1300C = 0;
+
+int __stdcall sub_110D0(char a1)
+{
+	int result; // eax@1
+	char v2; // cl@1
+	bool v3; // zf@3
+
+	result = dword_13034 - 200;
+	v2 = a1 ^ 5;
+	switch (dword_13034)
+	{
+	case 200:
+	case 202:
+	case 204:
+	case 206:
+		goto LABEL_2;
+	case 201:
+		v3 = v2 == -76;
+		goto LABEL_4;
+	case 203:
+	case 205:
+		v3 = v2 == -113;
+	LABEL_4:
+		if (v3)
+			goto LABEL_2;
+		goto LABEL_10;
+	case 207:
+		if (v2 != -78)
+			goto LABEL_10;
+		dword_13024 = 1;
+	LABEL_2:
+		++dword_13034;
+		break;
+	case 208:
+		dword_13024 = 0;
+	LABEL_10:
+		dword_1300C = 1;
+		break;
+	default:
+		return result;
+	}
+	return result;
+}
+int __stdcall sub_11156(char a1)
+{
+	int result; // eax@1
+	bool v2; // zf@4
+	char v3; // [sp+8h] [bp+8h]@1
+
+	result = dword_13034;
+	v3 = a1 ^ 0x12;
+	switch (dword_13034)
+	{
+	case 100:
+	case 102:
+	case 104:
+	case 106:
+		goto LABEL_2;
+	case 101:
+		v2 = v3 == -78;
+		goto LABEL_5;
+	case 103:
+		v2 = v3 == -123;
+		goto LABEL_5;
+	case 105:
+		v2 = v3 == -93;
+	LABEL_5:
+		if (!v2)
+			goto LABEL_6;
+	LABEL_2:
+		++dword_13034;
+		break;
+	case 107:
+		if (v3 == -122)
+			dword_13034 = 200;
+		else
+			LABEL_6 :
+			dword_1300C = 1;
+		break;
+	default:
+		result = sub_110D0(v3);
+		break;
+	}
+	return result;
+}
+
+signed int __stdcall sub_111DC(char a1)
+{
+	signed int result; // eax@1
+	bool v2; // zf@5
+
+	result = 1;
+	if (dword_1300C != 1)
+	{
+		switch (dword_13034)
+		{
+		case 0:
+		case 2:
+		case 4:
+		case 6:
+			goto LABEL_3;
+		case 1:
+			v2 = a1 == -91;
+			goto LABEL_6;
+		case 3:
+			v2 = a1 == -110;
+			goto LABEL_6;
+		case 5:
+			v2 = a1 == -107;
+		LABEL_6:
+			if (!v2)
+				goto LABEL_7;
+		LABEL_3:
+			++dword_13034;
+			break;
+		case 7:
+			if (a1 == -80)
+				dword_13034 = 100;
+			else
+				LABEL_7 :
+				dword_1300C = 1;
+			break;
+		default:
+			result = sub_11156(a1);
+			break;
+		}
+	}
+	return result;
+}
+int main() {
+	int count = 0;
+	int a[] = { -91, -110, -107, -80, -96, -105, -79, -108, -93, -104, -104, -91 };
+	for (int i = 0; i <= 24; i++) {
+		if (i % 2 == 0)
+			sub_111DC(i);
+		else {
+			sub_111DC(a[count]);
+			count++;
+		}
+	}
+		
+
+}

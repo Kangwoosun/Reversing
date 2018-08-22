@@ -1,0 +1,60 @@
+1. 블랙박스 vs 화이트박스
+
+- 블랙박스 : 소스코드 없이 점검하는 것
+
+- 화이트박스 : 소스코드를 리뷰하며 점검하는 것
+
+2. Dumb퍼징 vs Smart퍼징
+
+- Dumb퍼징 : 파일의 포맷을 분석하지 않은 상태로 무작위로 값을 변형하는 방식. 변형기반퍼징이라 불리기도 함
+
+- Smart퍼징 : 파일의 포맷을 분석한 뒤 포맷에 맞추어 변형하는 방식이며 생성기반 퍼징이라 불리기도 함
+
+3. Smart퍼징도구인 Peach
+
+ 해당 도구를 사용하려면 pit파일이라 불리는 XML파일이 필요함. 파일 내부에는 퍼징을 하기 위한 다양한 설정값이 존재
+
+- DataModel
+
+데이터 포맷 자체를 정의함 입력할 데이터 및 변형할 부분을 지정이 가능하므로 읿잔적으로 데이터 포맷에 대한 분석을 마친 후 작성
+ex)
+	<DataModel name="Test">
+	  <String value="test1234 />
+	  <number value="5" size="32" />
+	</DataModel>
+
+- StateModel
+ 퍼징 수행을 하기위한 동작들을 정의해줌. 크게 파일 포맷 퍼징과 네트워크 퍼징으로 나뉨. Action 태그를 통해 동작을 지정, type에 따라 동작이 구분
+
+	-파일 포맷 퍼지
+	
+	ex)
+	<StateModel name="TheStateModel" iniitialState="InitialState"
+		<State name="InitialState">
+			<Action type="output">
+		 	 <DataMdoel ref="FileTemplate" />
+			</Action>
+			<Action type = "close" />
+			<Action type = "call" method="TestMethod" publisher="Peach.Agent" />
+		</State>
+	</StateModel>
+
+	-네트워크 퍼지
+
+	ex)
+	<StateModel name="TheStateModel" initialState="InitialState">
+		<State name="InitialState">
+			<Action type="output">
+			   <DataModel ref="Send" />
+			</Action>
+			<Action type="input">
+			  <DataModel ref="Recv" />
+			</Action>
+		</State>
+	</StateModel>
+
+
+
+- Agent
+
+- Test

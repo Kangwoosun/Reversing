@@ -1,0 +1,32 @@
+Lib
+
+- MSF의 기본 뼈대가 되는 Base, Core 모듈 및 다양한 기능을 지원하는 Rex 및 기탕 MSF의 다양한 라이브러리들이 존재
+
+- 주로 auxiliary, exploit 등의 모듈에서 include하여 활용
+
+Module
+
+- msf 로드 후 use명령어를 통해 로드, run 등으로 사용하게 되는 실질적인 기능이 구현된 부분
+
+- 실제 공격에 활용할 코드들이 들어있는 중요한 부분
+
+Scripts
+
+- 쉘 혹은 meterpreter 세션 획득 후 사용할 수 있는 다양한 스크립트들이 존재
+
+Data
+
+- exploit 템플릿, ropdb를 위한 설정, meterpreter 기능 지원을 위한 dll 등 다양한 기타 부가 데이터들이 존재
+
+Tools
+
+- 개별적으로도 사용이 가능한 다양한 스크립트(툴)가 존재
+
+Plugins
+
+- 위의 lib, module 등과는 기능 측면에서 구분
+
+- 주로 msfconsole 자체의 기능 확장하기 위한 부분
+
+- nessus, nexpose 연동 지원 기능 등의 추가기능 및 msfconsole 명령추가 등을 위한 부분
+

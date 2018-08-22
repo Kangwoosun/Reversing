@@ -1,0 +1,74 @@
+sub_401000: dummy function // 아무짓도 안함 리턴값도 없고 쓰지도 않음
+
+[ebp-4] ==> pFile
+[ebp-8] ==> file reading count
+[ebp-0Ch] ==> 키값의 크기
+[ebp-10h] ==> file size
+[ebp-18h] ==> 사용자에게 받은 키값을 저장하는 주소의 끝 (null값의 위치) + 1
+[ebp-1Ch] ==> 사용자한테 받은 키값의 오프셋+1
+
+
+
+loc_44A819:
+	[ebp-4] ==> pFile(name:file)
+
+loc_44A856:
+	feof함수를 사용해서 파일포인터가 파일의 끝인지 확인
+	확인 후 끝이 아니면 반복문 수행, 끝이면 loc_44A897로 점프
+
+	[끝이 아닐경우의 반복문]
+	 fgetc함수 실행
+	 byte_5415B8[ecx]의 주소에 fgetc에서 읽은 값을 하나씩 넣음
+	 ecx의 값은 ebp-8에서 가져오는데 ebp-8의 초기값은 0, 실행 될때마다 1씩 증가함
+
+loc_44A897:
+	앞서 말했던 카운팅해주는 [ebp-8]를 0으로 다시 초기화
+	loc_44A8AE로 점프
+
+loc_44A8AE:
+	ecx에 [ebp-8]의 값을 넣고 [ebp-10h]와 값을 비교([ebp-8]과 [ebp-10h]의 비교)
+	ecx가 크거나 같으면 loc_44A8FF로 점프([ebp-8] >= [ebp-10h]이면 점프) 그렇지 않으면 반복문 수행
+	[반복문]
+	 ecx에 loc_44A856에서 저장한 byte_5415B8[ebp-8]의 값을 하나 복사
+	 eax에 [ebp-8]의 값을 넣음
+	 edx = 0 으로 초기화
+	 eax = [ebp-8]/[ebp-0Ch], edx = [edp-8]%[ebp-0Ch]
+	 edx = byte_44D370[edx](사용자에게 받은 키값)
+	 ecx ^= edx
+	 eax = [ebp-8]
+	 byte_5415B8[eax] = cl
+	 ecx = [ebp-8]
+	 edx = byte_5415B8[ecx]
+	 edx ^= 0x0FF
+	 eax = [ebp-8]
+	 byte_5415B8[eax] = dl
+	 [ebp-8]++
+	요약 : 
+	byte_5415B8[ebp-8] ^= {사용자에게 받은 키값(파일포인터의 위치%키값의 크기에 해당하는 키값) ^ 0xFF}
+	[ebp-8]++ ([ebp-0Ch]는 key_size)
+
+loc_44A8FF:
+	fclose 호출
+	fopen 호출
+	[ebp-14h]에 pFile저장
+	[ebp-8] = 0으로 초기화
+	loc_44A943으로 점프
+
+loc_44A943:
+	[ebp-8] >= [ebp-10h]이면 loc_44A96A로 점프 아니면 반복문 수행
+	[반복문]
+	 fputc(byte_5415B8[[ebp-8]], pFile([ebp-14h])) 호출
+	 [ebp-8]++
+loc_44A96A:
+	파일을 복구했다고 printf 호출
+	_getch 호출 후 retn
+
+
+
+
+
+
+
+00425BB2
+
+[108, 101, 116, 115, 112, 108, 97, 121, 99, 104, 101, 115, 115]

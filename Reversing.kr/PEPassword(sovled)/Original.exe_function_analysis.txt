@@ -1,0 +1,69 @@
+Original.exe_function_analysis
+
+[ESP+0h] = 0x2F
+[ESP+1h] = 0x1F
+[ESP+2h] = 0x2F
+[ESP+3h] = 0x7F
+[ESP+4h] = 0x6F
+[ESP+5h] = 0x5F
+[ESP+6h] = 0x4F
+[ESP+7h] = 0xBF
+[ESP+8h] = 0xAF
+[ESP+9h] = 0x9F
+[ESP+Ah] = 0x8F
+[ESP+Bh] = 0xFF
+[ESP+Ch] = 0xD0
+[ESP+10h] = 0x10
+[ESP+11h] = 0x20
+[ESP+12h] = 0x30
+[ESP+13h] = 0x40
+[ESP+14h] = 0x50
+[ESP+15h] = 0x60
+[ESP+16h] = 0x70
+[ESP+17h] = 0x80
+[ESP+18h] = 0x90
+[ESP+19h] = 0xA0
+[ESP+1Ah] = 0xB0
+[ESP+1Bh] = 0xC0
+[ESP+1Ch] = 0xD0
+
+WinMain
+
+	loc_4010A9:
+1	mov     cl, [esp+eax+10h]
+2	mov     dl, [esp+eax]
+3	xor     dl, cl
+4	mov     cl, dl
+5	mov     [esp+eax], dl
+6	mov     [esp+eax+3F], cl
+7	inc     eax
+8	cmp     eax, 0Dh
+9	jl      short loc_4010A9
+
+==> 	윗부분에서 xor eax, eax를 통해서 eax를 0으로 초기화해준 상태임 해당 반복문을 통해서 Text의 뒷부분 ?????을 정의해주고 있음
+	8번 cmp eax,0Dh를 통해서 총 13번 반복하는 것을 알 수 있음
+	위의 루틴을 돌때 ESP+20h 부분에 Text가 저장되어 있음
+	(이 루틴 윗부분에 ESP+28h에서 memcpy를 했지만 POP EDI, POP ESI를 했기 때문에 ESP += 8이므로 ESP+20h에 Text가 저장되어 있음)
+	Text = [43 6F 6E 67 72 61 74 75 6C 61 74 69 6F 6E 21 0D 0A 0D 0A 50 61 73 73 77 6F 72 64 20 69 73 20](아스키코드)이므로 
+	len(Text) == 31(0x1F)이기 때문에 Text의 끝부분(null값이 있는 부분)은 [ESP+20h+1Fh]인 [ESP+3Fh]임 (0x3F - 0x20 == 0x1F 이므로)
+	따라서 6번줄 mov [esp+eax+3F], cl의 의미는 ([esp]~[esp+0Ch]) ^ ([esp+10h]~[esp+1Ch])의 값을 Text 끝부분([esp+3F])에 붙인다는 의미임
+	또한 5번줄의 mov [esp+eax], dl의 의미는 [esp]~[esp+0Ch]의 값들을 변화시키는 역할을 함 
+	***********************************************************************************************************************************
+	해당 루틴의 역할은 알아냈으나 하드코딩이 되어있기 때문에 XOR을 수행하는값들이 어떠한 변화로 바뀌는 것을 기대하기는 어려움
+	그리고 뭔가 NOP*4부분과 ECX==0인데 REP STOS DWORD PTR ES:[EDI]를 하는 부분을 통해서 아마 다른 프로그램에서 Original.exe의 값을 바꿀 것이라 추측을 한번 해본다. 
+	2018-08-20
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

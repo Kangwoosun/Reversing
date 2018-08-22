@@ -1,0 +1,65 @@
+.ctor()에서 MetMett()의 바이너리를 수정하는 부분이 있음
+그래서 동적으로 .ctor()의 마지막부분까지 수행 후(복호화 후) 해당 바이너리를 복사해서 암호화된 함수에 붙여넣고 
+다시 분석을 진행함
+
+ab = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+mb = ab.DefineDynamicModule(assemblyName.Name, assemblyName.Name + ".exe");
+tb = DefineType("RevKrT2", TypeAttributes.Public);
+tb.DefineMethod("MetM", MethodAttributes.Private | MethodAttributes.Static,
+ CallingConventions.Standard, null, new Type[]{ typeof(byte[]), typeof(byte[])});
+
+modifed_MetMett_function
+
+03 8E 69 1F 0C 40 DF 00 00 00 02 16 18 9C 03 16 91 20 10 00 00 00 61 1F 4A 2E 04 02 16 17 9C 03 19 91 20 33 00 00 00 61 1F 46 2E 04 02 16 17 9C 03 17 91 20 11 00 00 00 61 1F 57 2E 04 02 16 17 9C 03 18 91 20 21 00 00 00 61 1F 4D 2E 04 02 16 17 9C 03 1F 0B 91 20 11 00 00 00 61 1F 2C 2E 04 02 16 17 9C 03 1E 91 20 90 00 00 00 61 20 F1 00 00 00 2E 04 02 16 17 9C 03 1A 91 20 44 00 00 00 61 1F 1D 2E 04 02 16 17 9C 03 1B 91 20 66 00 00 00 61 1F 31 2E 04 02 16 17 9C 03 1F 09 91 20 B5 00 00 00 61 20 E2 00 00 00 2E 04 02 16 17 9C 03 1D 91 20 A0 00 00 00 61 20 EE 00 00 00 2E 04 02 16 17 9C 03 1F 0A 91 20 EE 00 00 00 61 20 A3 00 00 00 2E 04 02 16 17 9C 03 1C 91 20 33 00 00 00 61 1F 75 2E 04 02 16 17 9C 2A
+
+		Real MetMett_function
+		if ((bt[0] ^ 16) != 74)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[3] ^ 51) != 70)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[1] ^ 17) != 87)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[2] ^ 33) != 77)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[11] ^ 17) != 44)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[8] ^ 144) != 241)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[4] ^ 68) != 29)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[5] ^ 102) != 49)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[9] ^ 181) != 226)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[7] ^ 160) != 238)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[10] ^ 238) != 163)
+		{
+			chk[0] = 1;
+		}
+		if ((bt[6] ^ 51) != 117)
+		{
+			chk[0] = 1;
+		}
+
+여기서 나온 bt(string)의 값을 base64 decoding을 해줘야됨

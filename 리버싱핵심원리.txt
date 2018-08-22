@@ -8,6 +8,7 @@
 
 --Window Programming--
 
+
 //HINSTANCE == HMODULE
 
 - 프로그램의 핸들이 아닌 프로그램 코드를 담고 있는 모듈( ex) .exe, .dll )에 대한 핸들
@@ -16,6 +17,13 @@
 // HWND
 - Window OS 에서 화면 출력을 위해 관리하는 리소스
 - 하나의 프로그램에 HWND 타입의 개체가 1개이상 될 수 있음
+
+lparam
+- 메세지 매개변수
+
+윈도우는 메세지 방식으로 프로그램이 진행됨. 메세지를 보낼 때 추가로 부가적인 정보를 넣는 것임. 메세지마다 다르게 구성되어 있어서 구체적으로 어떤 정보인지는 모름.
+
+참고:http://egloos.zum.com/chopisal/v/1278030
 
 // FARPROC == int(__stdcall* FARPROC)()
 // GetModuleHandle(NULL) == ImageBase

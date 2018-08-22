@@ -1,0 +1,157 @@
+Packed.exe_function_analysis
+
+[00409000] ~ [00409xxx]
+
+00409000  /$  E8 04000000   CALL Packed.00409009			//CALL 00409009를 통해서 스택에 PUSH 00409005를 함
+00409005  |.  8BEC          MOV EBP,ESP
+00409007  |.  5D            POP EBP
+00409008  \.  C3            RETN
+00409009  /$  33C0          XOR EAX,EAX					
+0040900B  |.  5D            POP EBP					//00409000에서 스택에 PUSH한 00409005를 EBP에 넣음
+0040900C  |.  8BFD          MOV EDI,EBP
+0040900E  |.  81ED 33264000 SUB EBP,Packed.00402633			//EBP = 00409005 - 00402633 = 000069D2
+00409014  |.  81EF 00900000 SUB EDI,9000
+0040901A  |.  83EF 05       SUB EDI,5					//EDI = 00409000
+0040901D  |.  89AD 88274000 MOV DWORD PTR SS:[EBP+Packed.402788],EBP	//실행하는 코드부분을 바꿈(00409153함수에서 EDI에 넣는 값을 동적으로 바꿔줌)
+00409023  |.  8D9D 07294000 LEA EBX,[EBP+Packed.402907]			//EBX = 00409000 + 2D9
+00409029  |.  8DB5 62284000 LEA ESI,[EBP+Packed.402862]			//ESI = 00409000 + 234 ([ESI+1]에는 해당 프로그램에 사용되는 문자열이 저장되어 있음)
+0040902F  |>  46            INC ESI
+00409030  |.  803E 00       CMP BYTE PTR DS:[ESI],0			//[ESI]에 있는 문자열의 끝(널값)에 도달했는 지 확인
+00409033  |.  74 24         JE SHORT Packed.00409059			
+00409035  |.  56            PUSH ESI					//"Kernel32.dll"문자열을 LoadLibraryA()의 인자로 PUSH
+00409036  |.  FF95 9D294000 CALL DWORD PTR SS:[EBP+Packed.40299D]	//Call [0040936F] (0040936F에 Kernel32.LoadLibraryA()함수의 주소를 동적으로 저장)
+0040903C  |> /46            /INC ESI
+0040903D  |. |803E 00       |CMP BYTE PTR DS:[ESI],0			//[903C] ~ [9040]처음 사용했던 문자열을 건너뜀("Kernel32.dll" 다음 문자열을 사용함)
+00409040  |.^\75 FA         |JNE SHORT Packed.0040903C			
+00409042  |. |46            |INC ESI
+00409043  |. |803E 00       |CMP BYTE PTR DS:[ESI],0
+00409046  |.^|74 E7         |JE SHORT Packed.0040902F
+00409048  |. |50            |PUSH EAX					//위에서 LoadLibraryA()의 리턴값으로 EAX = 라이브러리의 시작주소		
+00409049  |. |56            |PUSH ESI					//"GetMoudleHandleA" 문자열 PUSH (Procname)
+0040904A  |. |50            |PUSH EAX					//Kernel32.dll 시작주소 PUSH (hMoudle)
+0040904B  |. |FF95 A1294000 |CALL DWORD PTR SS:[EBP+Packed.4029A1]	//Call [00409373] (00409373에 Kernel32.GetProcAddress()함수의 주소를 동적으로 저장
+00409051  |. |8903          |MOV DWORD PTR DS:[EBX],EAX			//[EBX]에 GetMoudleHandleA()함수의 주소를 저장
+00409053  |. |58            |POP EAX					//위에 첫번째 PUSH EAX에서 저장된 EAX값을 갖고옴
+00409054  |. |83C3 04       |ADD EBX,4					//EBX 포인터를 옮김
+00409057  |.^\EB E3         \JMP SHORT Packed.0040903C			//반복문
+
+
+[0040903C] ~ [00409057] 반복문 정리
+
+[00409234]에는 문자열이 아스키코드로 하드코딩 되어 있음
+해당 문자열은 "Dll",0,"Function",0,Function,0,0,"Dll","Function"..형식으로 되어있고 다른 라이브러리 문자열로 넘어갈때는 널값이 두개가 있음
+그래서 함수주소를 구할때는 00409046의 분기문을 무시하고 GetProcAddress()를 실행하고 라이브러리의 주소를 구할 때는 0040902F로 넘어가 LoadLibraryA()를 실행함
+해당 함수주소는 004092D9(EBX)에 차례대로 저장됨
+저장되는 함수는 GetMoudleHandleA, ExitProcess, MessageBoxA, GetMessageA, TranslateMessage, DispatchMessageA, CreateDialogIndirectParamA, SendMessageA, EndDialog가 있음
+
+Q. Kernel32.LoadLibraryA("USER32.dll")를 실행할때 메인스레드를 제외한 3개의 스레드가 실행되고 다시 메인스레드로 돌아왔는데 그 이유를 모르겠음
+
+
+
+
+00409059  |>  6A 00         PUSH 0					//GetMoudleHandle의 인자값 0
+0040905B  |.  FF95 07294000 CALL DWORD PTR SS:[EBP+Packed.402907]	//EAX = IMAGE_DOS_HEADER(MZ)의 주소 (dialog box templated을 포함하고 있는 모듈의 주소)
+00409061  |.  8D8D F2294000 LEA ECX,[EBP+Packed.4029F2]			//ECX = 004093C4 (DLGTEMPLATE 구조체의 주소)
+00409067  |.  8D95 81274000 LEA EDX,[EBP+Packed.402781]			//EDX = 00409153 (DialogProc callback 함수주소)
+0040906D  |.  55            PUSH EBP					
+0040906E  |.  68 00040000   PUSH 400
+00409073  |.  52            PUSH EDX
+00409074  |.  6A 00         PUSH 0
+00409076  |.  51            PUSH ECX
+00409077  |.  50            PUSH EAX
+00409078  |.  FF95 1F294000 CALL DWORD PTR SS:[EBP+Packed.40291F]	//Call [004092F1] CreateDialogIndirectParamA(EAX, ECX, 0, EDX, 400)
+0040907E  |.  5D            POP EBP
+0040907F  |.  8DB5 802A4000 LEA ESI,[EBP+Packed.402A80]			//ESI = 00409452 (GetMessageA()에서 읽어들인 메시지를 저장하는 MSG구조체 주소)
+00409085  |>  6A 00         /PUSH 0
+00409087  |.  6A 00         |PUSH 0
+00409089  |.  6A 00         |PUSH 0
+0040908B  |.  56            |PUSH ESI
+0040908C  |.  FF95 13294000 |CALL DWORD PTR SS:[EBP+Packed.402913]	//Call [004092E5] GetMessageA(ESI, 0, 0, 0)
+00409092  |.  0BC0          |OR EAX,EAX
+00409094  |.  0F84 AB000000 |JZ Packed.00409145
+0040909A  |.  56            |PUSH ESI
+0040909B  |.  FF95 17294000 |CALL DWORD PTR SS:[EBP+Packed.402917]	//Call [004092E9] TranslateMessage(ESI)
+004090A1  |.  56            |PUSH ESI
+004090A2  |.  FF95 1B294000 |CALL DWORD PTR SS:[EBP+Packed.40291B]	//Call [004092ED] DispatchMessageA(ESI) 
+004090A8  |.  80BD 3E2A4000 |CMP BYTE PTR SS:[EBP+Packed.402A3E],0
+004090AF  |.^ 74 D4         \JE SHORT Packed.00409085
+
+
+Function
+[00409153]
+
+Function
+[004091D8]
+XOR EAX,EAX
+PUSH ECX
+PUSH ESI
+PUSH EDX
+XOR EDX,EDX
+DEC ESI
+INC ESI
+XOR AH,BYTE PTR DS:[ESI]
+XOR AL,DL
+ADD EAX,434F4445
+MOV CL,AL
+ROR EAX,CL
+XOR EAX,55AA5A5A
+DEC DX
+JNZ SHORT Packed.004091E3
+CMP BYTE PTR DS:[ESI],0
+JNE SHORT Packed.004091E0
+POP EDX
+POP ESI
+POP ECX
+RETN
+
+Function
+[00409200]
+
+00409200  /$  60            PUSHAD				//레지스터값 저장
+00409201  |.  8BF8          MOV EDI,EAX				//EDI = EAX(00401000) [느낌상 OEP인것같음]
+00409203  |.  8BF2          MOV ESI,EDX				//ESI = EDX(Dialog Box에 적은 문자열의 주소)
+00409205  |.  B8 48534148   MOV EAX,48415348			//EAX = 0x48415348("HASH")
+0040920A  |.  3206          XOR AL,BYTE PTR DS:[ESI]		//"H" ^ DialogBox에 적은 문자열의 첫글자
+0040920C  |.  E8 C9FFFFFF   CALL Packed.004091DA		//Call [004091DA] (일부로 EAX = 0을 하는 코드를 넘어서 Call을 함)
+00409211  |.  8BD8          MOV EBX,EAX				//EBX = EAX (004091DA("H"^첫글자))
+00409213  |.  3226          XOR AH,BYTE PTR DS:[ESI]		//"S" ^ DialogBox에 적은 문자열의 첫글자
+00409215  |.  E8 C0FFFFFF   CALL Packed.004091DA		//Call [004091DA]
+0040921A  |.  C1E9 02       SHR ECX,2				//ECX = 1000 (4000/4)
+0040921D  |.  8BD1          MOV EDX,ECX				//EDX = ECX = 1000
+0040921F  |>  3107          /XOR DWORD PTR DS:[EDI],EAX		//00401000부터 복호화
+00409221  |.  8AC8          |MOV CL,AL				//CL = AL
+00409223  |.  83C7 04       |ADD EDI,4				//EDI 포인터 옮기기
+00409226  |.  D3C3          |ROL EBX,CL				
+00409228  |.  33C3          |XOR EAX,EBX
+0040922A  |.  8ACF          |MOV CL,BH
+0040922C  |.  D3C8          |ROR EAX,CL
+0040922E  |.  03D8          |ADD EBX,EAX
+00409230  |.  4A            |DEC EDX
+00409231  |.^ 75 EC         \JNZ SHORT Packed.0040921F
+00409233  |.  61            POPAD
+00409234  \.  C3            RETN
+
+지금 여기서 알아야 되는 것은 00409200 복호화문에서 제일 처음 0040921F문이 실행될때의 EAX값과 EBX값을 알아내야됨
+방법이 두가지 있음
+
+첫번째는 Original.exe파일을 이용하는 것이다.
+Original.exe의 00401000의 바이너리와 Packed.exe의 00401000의 바이너리를 XOR연산을 해서 First EAX값을 알아내면 
+Get_First EAX,EBX_1.cpp를 사용하여 First EBX값을 찾고 해당 EAX, EBX값을 0040921F문이 시작할때 넣어주면 복호화가 가능해진다.
+
+두번째는 코드섹션 마지막부분의 바이너리값이 0인것을 이용하는 것이다.
+http://www.jiniya.net/tt/725를 읽고 와야됨
+그렇게 Last EAX값을 찾으려고 했으나..!! 코드섹션 마지막부분에 8바이트부분이 "goodluck"이라고 되어 있어서 한참 헤맸다..
+그래서 00404FE9 ~ 00404FF8까지의 값을 긁어 와서 Get_Last EAX,EBX_2.cpp의 배열 P를 구성하고 EBX의 값을 구한 뒤
+Get_First EAX,EBX_2.cpp에 EAX와 EBX를 세팅해주고 돌리면 첫 EAX, EBX를 구할 수 있다.
+
++++++++++++++++++++++++++++++++++++++++++++
+
+00409200함수 실행이 끝난 뒤에 추가적인 작업이 있길래 확인 해본 결과 LoadLibrary(), Getprocaddress()... 등을 이용해서
+각종 함수들의 주소를 00405000에 저장하는 것을 반복하는 문이였음
+
+2018.08.22
+
+
+
+
+

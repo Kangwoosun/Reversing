@@ -1,0 +1,43 @@
+fpu에는 C3, C2, C0 라는 상태 code flag가 존재함
+
+fcomp
+	fcomp a
+	(st(0)과 a를 비교하고 st레지스터를 pop함)
+	fcomp st(i)
+	(st(0)과 st(i)를 비교하고 st레지스터를 pop함)
+	
+	비교한 내용에 따라 flag의 값이 달라지는데
+	if ST(0) > Source, C3 = 0, C2 = 0, C0 = 0;
+	if ST(0) < Source, C3 = 0, C2 = 0, C0 = 1;
+	if ST(0) = Source, C3 = 1, C2 = 0, C0 = 0;
+	로 flag가 세팅됨
+fnstsw
+	fnstsw a
+	(fpu status word를 a에 저장)
+
+fld 
+	fld st(i)
+	(st(i)의 값을 st레지스터에 push)
+	fld dword ptr ss:[ebp+0xc]
+	([ebp+0xc]의 값을 st레지스터에 push)
+
+fldz
+	fldz
+	(0.0을 st레지스터에 push)
+fstp
+	fstp a
+	(st(0)의 값을 a에 복사 후 pop) 
+fst
+	fst a
+	(st(0)의 값을 a에 복사)
+
+fmul
+	fmul a
+	(st(0) *= a)
+	fmul st(0), st(i)
+	(st(0) *= st(i))
+	fmul st(i), st(0)
+	(st(i) *= st(0))
+setz
+	setz r/m8
+	(zf == 1이면 byte를 1로 아니면 0으로)
