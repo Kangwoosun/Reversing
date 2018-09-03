@@ -13,14 +13,12 @@ for i in range(0, 29):
             key *= 2
             if (key & 0x100) :
                 key |= 1
-    if (key == key_code[i]):
-        input_keycode.insert(i,key)
-        check = 1
-        break
-
-    if check == 0:
-        print("Error : " + str(i))
-        
-
+            key &= 0xFF
+        if (key == key_code[i]):
+            input_keycode.insert(i,j)
+            break
+res = ""
 for i in input_keycode:
-    print(chr(i), end ='')
+    res += chr(i)
+
+print res
